@@ -4,9 +4,8 @@ const redditClient = require("../model/redditClient");
 exports.getNewPosts = async function (req, res) {
   try {
     const subName = req.params.sub;
-    const { limit } = +req.query;
+    const limit = +req.query.limit;
     const posts = await redditClient.getNew(subName, { limit: limit || 10 });
-
     const postsObj = posts.map((post) => ({
       title: post.title,
       subName: post.subreddit_name_prefixed,
