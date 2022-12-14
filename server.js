@@ -12,5 +12,6 @@ app.listen(port, () => {
     console.log("App is running.....");
   } catch (err) {
     console.error("Server cannot be reached, try again in a few seconds");
+    process.exit();
   }
 });
