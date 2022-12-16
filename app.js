@@ -1,20 +1,24 @@
+/* eslint-disable no-console */
 const express = require("express");
-const morgan = require("morgan");
+const dotenv = require("dotenv");
+const connectDatabase = require("./modules/connectDB");
+const subredditController = require("./controllers/subredditController");
 
 // create app
 const app = express();
+dotenv.config({ path: "./config.env" });
 
-// middleware
-if (process.env.DEVELOPMENT) app.use(morgan("dev"));
+// Database
 
-app.use(express.json());
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-const postRoute = require("./routes/postRoutes");
-
-// Resources
-app.use("/api/v1/posts", postRoute);
+(async () => {
+  await connectDatabase();
+  // await subredditController.createSubredditEntry({
+  //   subredditName: "oddlysatisfying",
+  //   isNsfw: false,
+  // });
+  // await subredditController.clearSubreddits();
+  const subreddits = await subredditController.getAllSubreddits();
+  console.log(subreddits);
+})();
 
 module.exports = app;
