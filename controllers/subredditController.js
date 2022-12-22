@@ -1,12 +1,15 @@
 const Subreddit = require("../model/subredditModel");
 
 exports.getAllSubreddits = async () => {
-  const subreddits = await Subreddit.find();
-  return subreddits;
+  let subreddits = Subreddit.find();
+  subreddits = subreddits.select("-__v");
+  return await subreddits;
 };
-exports.createSubredditEntry = async function (dataBody) {
-  return Subreddit.create(dataBody);
-};
-exports.clearSubreddits = async () => {
-  await Subreddit.deleteMany({});
-};
+// testing only
+
+// exports.createSubredditEntry = async function (dataBody) {
+//   return Subreddit.create(dataBody);
+// };
+// exports.clearSubreddits = async () => {
+//   await Subreddit.deleteMany({});
+// };

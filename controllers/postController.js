@@ -1,84 +1,16 @@
 /* eslint-disable no-sequences */
 const redditClient = require("../model/redditClient");
+const createPostObj = require("../modules/createPostObj");
 
-exports.getNewPosts = async function (req, res) {
-  try {
-    const subName = req.params.sub;
-    const limit = +req.query.limit;
-    const posts = await redditClient.getNew(subName, { limit: limit || 10 });
-    const postsObj = posts.map((post) => ({
-      title: post.title,
-      subName: post.subreddit_name_prefixed,
-      score: post.score,
-      thumbnail: post.thumbnail,
-      isNsfw: post.over_18,
-      url: post.url,
-    }));
-
-    res.status(200).json({
-      status: "success",
-      requestTime: req.requestTime,
-      length: posts.length,
-      data: postsObj,
-    });
-  } catch (err) {
-    res.status(401).json({
-      status: "fail",
-      message: err,
-    });
-  }
+exports.getNewPosts = async function (subName, limit) {
+  const posts = await redditClient.getNew(subName, { limit: limit || 10 });
+  return createPostObj(posts);
 };
-exports.getHotPosts = async function (req, res) {
-  try {
-    const subName = req.params.sub;
-    const limit = +req.query.limit;
-    const posts = await redditClient.getHot(subName, { limit: limit || 10 });
-    const postsObj = posts.map((post) => ({
-      title: post.title,
-      subName: post.subreddit_name_prefixed,
-      score: post.score,
-      thumbnail: post.thumbnail,
-      isNsfw: post.over_18,
-      url: post.url,
-    }));
-
-    res.status(200).json({
-      status: "success",
-      requestTime: req.requestTime,
-      length: posts.length,
-      data: postsObj,
-    });
-  } catch (err) {
-    res.status(401).json({
-      status: "fail",
-      message: err,
-    });
-  }
+exports.getHotPosts = async function (subName, limit) {
+  const posts = await redditClient.getHot(subName, { limit: limit || 10 });
+  return createPostObj(posts);
 };
-exports.getTopPosts = async function (req, res) {
-  try {
-    const subName = req.params.sub;
-    const limit = +req.query.limit;
-    const posts = await redditClient.getTop(subName, { limit: limit || 10 });
-    const postsObj = posts.map((post) => ({
-      title: post.title,
-      subName: post.subreddit_name_prefixed,
-      score: post.score,
-      thumbnail: post.thumbnail,
-      isNsfw: post.over_18,
-      url: post.url,
-    }));
-
-    res.status(200).json({
-      status: "success",
-      requestTime: req.requestTime,
-      length: posts.length,
-      data: postsObj,
-    });
-  } catch (err) {
-    res.status(401).json({
-      status: "fail",
-      message: err,
-    });
-  }
+exports.getTopPosts = async function (subName, limit) {
+  const posts = await redditClient.getTop(subName, { limit: limit || 10 });
+  return createPostObj(posts);
 };

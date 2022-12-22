@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=Development nodemon app.js "
+    "start": "NODE_ENV=Development nodemon --ignore log.json app.js "
   },
   "author": "",
   "license": "ISC",
