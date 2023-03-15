@@ -6,14 +6,14 @@ const subredditController = require("./subredditController");
 exports.fetchData = async (req, res) => {
   try {
     const subreddits = await subredditController.getAllSubreddits();
-    // eslint-disable-next-line no-unused-vars
+    if (!subreddits) throw new Error("No were subreddits found!");
     const data = await Promise.all(
       subreddits.map(async (sub) => {
         const hotList = await postController.getHotPosts(
           sub.subredditName,
           Math.floor((Math.random() + process.env.MINIMUM) * +process.env.LIMIT)
         );
-        // add variables for new limit
+
         const newList = await postController.getNewPosts(
           sub.subredditName,
           Math.floor(
@@ -27,7 +27,7 @@ exports.fetchData = async (req, res) => {
         return dataArr;
       })
     );
-    await fs.writeFile("./log.json", JSON.stringify(data));
+    if (process.env.LOG) await fs.writeFile("./log.json", JSON.stringify(data));
     await Url.create(data[0]);
     const docNum = await Url.countDocuments();
     res.status(201).json({
