@@ -3,6 +3,8 @@ const Subreddit = require("../model/subredditModel");
 
 exports.getAllSubreddits = async (req, res) => {
   try {
+    if (!req && !res) return await Subreddit.find();
+
     const searchQueries = { ...req.query };
     let queryStr = JSON.stringify(searchQueries);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
@@ -51,6 +53,21 @@ exports.deleteSubredditEntry = async (req, res) => {
     res.status(404).json({
       status: "fail",
       message: err.message,
+    });
+  }
+};
+exports.clearAllSubredditEntries = async (req, res) => {
+  try {
+    await Subreddit.deleteMany({});
+    res.status(204).json({
+      requestTime: req.requestTime,
+      status: "success",
+      data: null,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err,
     });
   }
 };

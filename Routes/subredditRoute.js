@@ -5,6 +5,8 @@ const router = express.Router();
 router
   .route("/")
   .get(controller.getAllSubreddits)
-  .post(controller.createSubredditEntry);
+  .post(controller.createSubredditEntry)
+  .delete(controller.clearAllSubredditEntries);
+
 router.route("/:id").delete(controller.deleteSubredditEntry);
 module.exports = router;
