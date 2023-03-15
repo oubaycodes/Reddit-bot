@@ -5,7 +5,7 @@ const subredditController = require("./subredditController");
 
 exports.fetchData = async (req, res) => {
   try {
-    const subreddits = await subredditController.getAllSubreddits(null, null);
+    const subreddits = await subredditController.getAllSubreddits();
     // eslint-disable-next-line no-unused-vars
     const data = await Promise.all(
       subreddits.map(async (sub) => {
