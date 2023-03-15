@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=Development nodemon --ignore log.json app.js "
+    "start": "NODE_ENV=Development nodemon --ignore log.json server.js "
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.2",
-    "express": "^4.18.1",
+    "express": "^4.18.2",
     "mongoose": "^6.8.0",
+    "node": "^19.6.1",
     "snoowrap": "^1.23.0"
   },
   "devDependencies": {
