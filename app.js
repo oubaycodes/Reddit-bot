@@ -1,7 +1,3 @@
-/* eslint-disable no-loop-func */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-console */
-// const fs = require("fs/promises");
 const express = require("express");
 const dotenv = require("dotenv");
 
