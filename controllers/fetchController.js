@@ -6,7 +6,7 @@ const subredditController = require("./subredditController");
 exports.fetchData = async (req, res) => {
   try {
     const subreddits = await subredditController.getAllSubreddits();
-    if (!subreddits) throw new Error("No were subreddits found!");
+    if (!subreddits) throw new Error("No subreddits were found!");
     const data = await Promise.all(
       subreddits.map(async (sub) => {
         const hotList = await postController.getHotPosts(
@@ -22,13 +22,14 @@ exports.fetchData = async (req, res) => {
           )
         );
         let dataArr = Array.from(hotList.concat(Array.from(newList)));
-        dataArr = new Set(dataArr);
         dataArr = Array.from(dataArr);
         return dataArr;
       })
     );
-    if (process.env.LOG) await fs.writeFile("./log.json", JSON.stringify(data));
-    await Url.create(data[0]);
+
+    if (process.env.LOG)
+      await fs.writeFile("./log.json", JSON.stringify(data.flat(1)));
+    await Url.create(data);
     const docNum = await Url.countDocuments();
     res.status(201).json({
       requestTime: req.requestTime,
