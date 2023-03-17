@@ -70,7 +70,7 @@ exports.fetchData = async (req, res) => {
 
     if (process.env.LOG === "true")
       await fs.writeFile("./log.json", JSON.stringify(data.flat(1)));
-    await Url.create(data.flat(1));
+    await Url.create(data.flat());
     const removedDuplicates = await clearDuplicateResults();
     const docNum = await Url.countDocuments();
 
