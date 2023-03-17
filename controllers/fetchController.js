@@ -37,7 +37,9 @@ exports.fetchData = async (req, res) => {
       documentAmount: docNum,
     });
   } catch (err) {
+    const docNum = await Url.countDocuments();
     res.status(404).json({
+      documentAmount: docNum,
       requestTime: req.requestTime,
       status: "fail",
       message: err.message,

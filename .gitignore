@@ -2,3 +2,4 @@ node_modules/
 config.env
 .vscode/
 .eslintrc.json
+log.json
