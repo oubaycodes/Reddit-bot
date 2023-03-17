@@ -1,18 +1,40 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 const Url = require("../model/urlModel");
+const APIfeatures = require("../modules/apiFeatures");
 
 exports.getAllUrls = async (req, res) => {
   try {
-    const searchQueries = { ...req.query };
-    let queryStr = JSON.stringify(searchQueries);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    const urls = await Url.find(JSON.parse(queryStr));
+    const urlFeatures = new APIfeatures(Url.find(), req.query)
+      .filter()
+      .sort()
+      .limit()
+      .paginate();
+    const urls = await urlFeatures.query;
+    res.status(200).json({
+      requestTime: req.requestTime,
+      status: "success",
+      results: urls.length,
+      page: urlFeatures.page,
+      data: {
+        urls,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+exports.getUrlEntry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const url = await Url.findById(id);
     res.status(200).json({
       requestTime: req.requestTime,
       status: "success",
       data: {
-        urls,
+        url,
       },
     });
   } catch (err) {
@@ -39,6 +61,7 @@ exports.deleteUrlEntry = async (req, res) => {
     });
   }
 };
+
 exports.clearAllUrlEntries = async (req = null, res = null) => {
   try {
     await Url.deleteMany({});

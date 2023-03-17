@@ -3,6 +3,47 @@ const postController = require("./postController");
 const Url = require("../model/urlModel");
 const subredditController = require("./subredditController");
 
+const clearDuplicateResults = async (req = null, res = null) => {
+  try {
+    const docAmountBefore = await Url.countDocuments();
+    const results = await Url.aggregate([
+      {
+        $group: {
+          _id: { title: "$title", url: "$url" },
+          dupes: { $push: "$_id" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
+        },
+      },
+    ]);
+
+    const idsToDelete = results.map((result) => result.dupes.shift());
+    await Url.deleteMany({ _id: { $in: idsToDelete } });
+    const docAmountAfter = await Url.countDocuments();
+    const docsDeleted = Math.abs(docAmountBefore - docAmountAfter);
+    if (!req && !res) return docsDeleted;
+    res.status(200).json({
+      requestTime: req.requestTime,
+      status: "success",
+      docsDeleted,
+      results,
+    });
+  } catch (err) {
+    res.status(404).json({
+      requestTime: req.requestTime,
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+// funny code
+exports.clearDuplicateResults = clearDuplicateResults;
+
 exports.fetchData = async (req, res) => {
   try {
     const subreddits = await subredditController.getAllSubreddits();
@@ -27,14 +68,17 @@ exports.fetchData = async (req, res) => {
       })
     );
 
-    if (process.env.LOG)
+    if (process.env.LOG === "true")
       await fs.writeFile("./log.json", JSON.stringify(data.flat(1)));
-    await Url.create(data);
+    await Url.create(data.flat(1));
+    const removedDuplicates = await clearDuplicateResults();
     const docNum = await Url.countDocuments();
+
     res.status(201).json({
       requestTime: req.requestTime,
       status: "success",
       documentAmount: docNum,
+      removedDuplicates,
     });
   } catch (err) {
     const docNum = await Url.countDocuments();

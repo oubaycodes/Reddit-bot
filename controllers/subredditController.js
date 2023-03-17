@@ -1,18 +1,22 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 const Subreddit = require("../model/subredditModel");
 const urlController = require("./urlController");
+const APIfeatures = require("../modules/apiFeatures");
 
 exports.getAllSubreddits = async (req = null, res = null) => {
   try {
     if (!req && !res) return await Subreddit.find();
 
-    const searchQueries = { ...req.query };
-    let queryStr = JSON.stringify(searchQueries);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    const subreddits = await Subreddit.find(JSON.parse(queryStr));
+    const subredditFeatures = new APIfeatures(Subreddit.find(), req.query)
+      .filter()
+      .sort()
+      .limit()
+      .paginate();
+    const subreddits = await subredditFeatures.query;
     res.status(200).json({
       requestTime: req.requestTime,
+      page: subredditFeatures.page,
+      results: subreddits.length,
       status: "success",
       data: {
         subreddits,
@@ -25,7 +29,24 @@ exports.getAllSubreddits = async (req = null, res = null) => {
     });
   }
 };
-
+exports.getSubredditEntry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const subreddit = await Subreddit.findById(id);
+    res.status(200).json({
+      requestTime: req.requestTime,
+      status: "success",
+      data: {
+        subreddit,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
 exports.createSubredditEntry = async (req, res) => {
   try {
     const subreddit = await Subreddit.create(req.body);
