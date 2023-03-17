@@ -8,5 +8,8 @@ router
   .post(controller.createSubredditEntry)
   .delete(controller.clearAllSubredditEntries);
 
-router.route("/:id").delete(controller.deleteSubredditEntry);
+router
+  .route("/:id")
+  .get(controller.getSubredditEntry)
+  .delete(controller.deleteSubredditEntry);
 module.exports = router;

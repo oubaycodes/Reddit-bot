@@ -6,5 +6,8 @@ router
   .route("/")
   .get(controller.getAllUrls)
   .delete(controller.clearAllUrlEntries);
-router.route("/:id").delete(controller.clearAllUrlEntries);
+router
+  .route("/:id")
+  .get(controller.getUrlEntry)
+  .delete(controller.deleteUrlEntry);
 module.exports = router;
