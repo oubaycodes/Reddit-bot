@@ -1,4 +1,5 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
+/* eslint-disable no-unneeded-ternary */
+/* eslint-disable no-constant-condition */
 const Url = require("../model/urlModel");
 const APIfeatures = require("../modules/apiFeatures");
 
@@ -17,6 +18,35 @@ exports.getAllUrls = async (req, res) => {
       page: urlFeatures.page,
       data: {
         urls,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+exports.getRandom = async (req, res) => {
+  try {
+    let isNsfw = false;
+    if (req.query.isNsfw === "true") {
+      isNsfw = true;
+    }
+    const url = await Url.aggregate([
+      {
+        $match: { isNsfw: isNsfw },
+      },
+      {
+        $sample: { size: 1 },
+      },
+    ]);
+
+    res.status(200).json({
+      requestTime: req.requestTime,
+      status: "success",
+      data: {
+        url,
       },
     });
   } catch (err) {
