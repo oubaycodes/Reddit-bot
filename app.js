@@ -1,3 +1,4 @@
+/* eslint-disable node/no-extraneous-require */
 const express = require("express");
 const dotenv = require("dotenv");
 const timeout = require("express-timeout-handler");
