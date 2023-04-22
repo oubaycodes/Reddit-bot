@@ -5,7 +5,7 @@ class APIfeatures {
     this.queryString = queryString;
   }
 
-  filter() {
+  filter(aggregate = false) {
     const searchQueries = { ...this.queryString };
     const uniqueQueries = ["page", "sort", "limit", "fields"];
     uniqueQueries.forEach((el) => delete searchQueries[el]);
@@ -14,9 +14,11 @@ class APIfeatures {
 
     let queryStr = JSON.stringify(searchQueries);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    this.queryString = JSON.parse(queryStr);
+    if (aggregate) return this;
 
     //  SETTING SEARCH
-    this.query = this.query.find(JSON.parse(queryStr));
+    this.query = this.query.find(this.queryString);
     return this;
   }
 

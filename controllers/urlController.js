@@ -29,14 +29,17 @@ exports.getAllUrls = async (req, res) => {
 };
 exports.getRandom = async (req, res) => {
   try {
-    const urlFeatures = new APIfeatures(Url.find(), req.query)
-      .filter()
-      .sort()
-      .limit()
-      .paginate();
+    const urlFeatures = new APIfeatures("", req.query).filter(true);
+    const { queryString } = urlFeatures;
+
     const url = await Url.aggregate([
       {
-        $match: urlFeatures.query,
+        $match: {
+          isNsfw: queryString.isNsfw === "true" ? true : false,
+          score: {
+            [Object.keys(queryString.score)]: +Object.values(queryString.score),
+          },
+        },
       },
       {
         $sample: { size: 1 },
