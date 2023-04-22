@@ -29,13 +29,14 @@ exports.getAllUrls = async (req, res) => {
 };
 exports.getRandom = async (req, res) => {
   try {
-    let isNsfw = false;
-    if (req.query.isNsfw === "true") {
-      isNsfw = true;
-    }
+    const urlFeatures = new APIfeatures(Url.find(), req.query)
+      .filter()
+      .sort()
+      .limit()
+      .paginate();
     const url = await Url.aggregate([
       {
-        $match: { isNsfw: isNsfw },
+        $match: urlFeatures.query,
       },
       {
         $sample: { size: 1 },
